@@ -14,9 +14,10 @@ git clone https://github.com/jmrichardson/vmg.git
 conda create -n vmg python=3.6
 conda activate vmg
 conda install -y -c conda-forge django django-allauth django-crispy-forms 
+# Remove "tensorflow-gpu" if you do not have a GPU
 conda install -y -c anaconda tensorflow-gpu keras opencv pillow
 
-# Optional (required for labelImg)
+# Optional LabelImg for Linux (required for generating bounding box coordinates)
 sudo apt-get update
 sudo apt-get insatll pyqt5-dev-tools
 git clone https://github.com/tzutalin/labelImg.git
