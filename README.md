@@ -1,6 +1,9 @@
 # Parking Spot Locator
 
-Python application to detect empty parking lot spots with deep learning.
+![Parking Lot](https://raw.githubusercontent.com/jmrichardson/vmg/master/src/static/img/spots.jpg)
+
+Python application to detect empty parking lot spots with deep learning
+from video stream.
 
 * Keras/TensorFlow deep learning
 * Django user interface
