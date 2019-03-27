@@ -41,92 +41,97 @@ def parking_lot_jpeg():
 
     warmup = True
 
-    # print("Captured parking lot image ..")
+    #### cap = cv2.VideoCapture('rtsp://admin:admin@192.168.1.1:554/11')
+    #### print("Captured parking lot image ..")
 
     while True:
 
-        # Capture video image from video stream
-        cap = cv2.VideoCapture('rtsp://admin:ez4me2no@192.168.1.10:554/11')
-        ret, image = cap.read()
-        if not ret:
-            print("Error getting image...")
-            continue
-        del(cap)
+        # Obtain list of files for testing purposes (temporary)
+        images = [cv2.imread(file) for file in glob.glob("parking_spot/data/images/all/*.jpg")]
 
-        print("Processing image ...")
+        for image in images:
 
-        # Warmup browser with image
-        if warmup:
-            frame = cv2.imencode('.jpg', image)[1].tobytes()
-            yield (b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-            yield (b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-            warmup = False
+            # Capture video image from video stream
+            #### ret, image = cap.read()
+            #### if not ret:
+                #### print("Error getting image...")
+                #### continue
+            ## SHOULDNT NEED THIS ## del (cap)
 
-        date_image_start = datetime.now()
+            print("Processing image ...")
 
-        # Initialize count variables
-        spots_empty = 0
+            # Warmup browser with image
+            if warmup:
+                frame = cv2.imencode('.jpg', image)[1].tobytes()
+                yield (b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+                yield (b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+                warmup = False
 
-        # Copy image for overlay
-        image_overlay = np.copy(image)
+            date_image_start = datetime.now()
 
-        # Loop through all defined spots
-        for spot in spots.values():
+            # Initialize count variables
+            spots_empty = 0
 
-            # Get spot coordinates and assign to x,y coordinates
-            (x1, y1, x2, y2) = spot
+            # Copy image for overlay
+            image_overlay = np.copy(image)
 
-            # Crop the image to the particular parking spot
-            image_spot = image[y1:y2, x1:x2]
+            # Loop through all defined spots
+            for spot in spots.values():
 
-            # Resize spot so all spots have the same size and rescale
-            # image_spot = cv2.resize(image_spot, (210, 380))
-            # image_spot = cv2.resize(image_spot, (32, 32))
-            image_spot = cv2.resize(image_spot, (105, 190))
+                # Get spot coordinates and assign to x,y coordinates
+                (x1, y1, x2, y2) = spot
 
-            # Normalize RGB values 255/255/255 to 0-1/0-1/0-1
-            image_scale = image_spot/255
+                # Crop the image to the particular parking spot
+                image_spot = image[y1:y2, x1:x2]
 
-            # Convert to a 4D tensor
-            image_tf = np.expand_dims(image_scale, axis=0)
+                # Resize spot so all spots have the same size and rescale
+                # image_spot = cv2.resize(image_spot, (210, 380))
+                # image_spot = cv2.resize(image_spot, (32, 32))
+                image_spot = cv2.resize(image_spot, (105, 190))
 
-            # Classify parking spot image and label
-            spot_class = model.predict(image_tf)
+                # Normalize RGB values 255/255/255 to 0-1/0-1/0-1
+                image_scale = image_spot/255
 
-            inID = np.argmax(spot_class[0])
-            label = class_dictionary[inID]
-            # print(label)
+                # Convert to a 4D tensor
+                image_tf = np.expand_dims(image_scale, axis=0)
 
-            # Highlight all empty parking spots on overlay image
-            if label == 'empty':
-                cv2.rectangle(image_overlay, (int(x1), int(y1)), (int(x2), int(y2)), color, -1)
-                # Count empty spots
-                spots_empty += 1
+                # Classify parking spot image and label
+                spot_class = model.predict(image_tf)
 
-        # Total occupied parking spots
-        spots_occupied = spots_total - spots_empty
+                inID = np.argmax(spot_class[0])
+                label = class_dictionary[inID]
+                # print(label)
 
-        # Add overlay to image
-        cv2.addWeighted(image_overlay, alpha, image, 1 - alpha, 0, image)
+                # Highlight all empty parking spots on overlay image
+                if label == 'empty':
+                    cv2.rectangle(image_overlay, (int(x1), int(y1)), (int(x2), int(y2)), color, -1)
+                    # Count empty spots
+                    spots_empty += 1
 
-        # Encode image to bytes
-        image = cv2.imencode('.jpg', image)[1].tobytes()
+            # Total occupied parking spots
+            spots_occupied = spots_total - spots_empty
 
-        date_image_end = datetime.now()
+            # Add overlay to image
+            cv2.addWeighted(image_overlay, alpha, image, 1 - alpha, 0, image)
 
-        print("Total time: " + str(date_image_end - date_image_start))
+            # Encode image to bytes
+            image = cv2.imencode('.jpg', image)[1].tobytes()
 
-        # Return image
-        yield (b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + image + b'\r\n\r\n')
-        yield (b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + image + b'\r\n\r\n')
+            date_image_end = datetime.now()
 
-        # Update spot stats
-        stat = Stats.objects.first()
-        stat.spots_empty = spots_empty
-        stat.spots_total = spots_total
-        stat.spots_occupied = spots_occupied
-        stat.save()
-        # time.sleep(1)
+            print("Total time: " + str(date_image_end - date_image_start))
+
+            # Return image
+            yield (b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + image + b'\r\n\r\n')
+            yield (b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + image + b'\r\n\r\n')
+
+            # Update spot stats
+            stat = Stats.objects.first()
+            stat.spots_empty = spots_empty
+            stat.spots_total = spots_total
+            stat.spots_occupied = spots_occupied
+            stat.save()
+            # time.sleep(1)
 
 
 @gzip.gzip_page
@@ -140,7 +145,7 @@ def parking_lot_stream(request):
 def spots_occupied_text():
 
     while True:
-        time.sleep(.001)
+        time.sleep(.05)
         stat = Stats.objects.first()
         yield "data: " + str(stat.spots_occupied) + "\r\n\r\n"
 
@@ -156,7 +161,7 @@ def spots_occupied_stream(request):
 def spots_empty_text():
 
     while True:
-        time.sleep(.001)
+        time.sleep(.05)
         stat = Stats.objects.first()
         yield "data: " + str(stat.spots_empty) + "\r\n\r\n"
 
@@ -171,6 +176,4 @@ def spots_empty_stream(request):
 # Render home page template
 def home(request):
     return render(request, 'home.html')
-
-
 

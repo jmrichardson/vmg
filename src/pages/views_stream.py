@@ -59,6 +59,7 @@ def parking_lot_jpeg():
         if warmup:
             frame = cv2.imencode('.jpg', image)[1].tobytes()
             yield (b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+            yield (b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
             warmup = False
 
         date_image_start = datetime.now()
@@ -81,7 +82,8 @@ def parking_lot_jpeg():
             # Resize spot so all spots have the same size and rescale
             # image_spot = cv2.resize(image_spot, (210, 380))
             # image_spot = cv2.resize(image_spot, (32, 32))
-            image_spot = cv2.resize(image_spot, (96, 96))
+            # image_spot = cv2.resize(image_spot, (96, 96))
+            image_spot = cv2.resize(image_spot, (105, 190))
 
             # Normalize RGB values 255/255/255 to 0-1/0-1/0-1
             image_scale = image_spot/255
@@ -117,7 +119,7 @@ def parking_lot_jpeg():
 
         # Return image
         yield (b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + image + b'\r\n\r\n')
-        # yield (b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + image + b'\r\n\r\n')
+        yield (b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + image + b'\r\n\r\n')
 
         # Update spot stats
         stat = Stats.objects.first()
