@@ -1,0 +1,37 @@
+{% load static %}
+
+<div id="info" class="card-deck">
+  <div class="card border-dark mb-3" style="max-width: 18rem;">
+    <div class="card-header">Total Parking Spots</div>
+    <div class="card-body text-dark">
+      <strong><font size="70">
+        <div id="spots_total">38</div>
+      </font></strong>
+    </div>
+  </div>
+  <div class="card border-danger mb-3" style="max-width: 18rem;">
+    <div class="card-header">Total Spots Occupied</div>
+    <div class="card-body text-danger">
+      <strong><font size="70">
+        <div id="spots_occupied"></div>
+      </font></strong>
+    </div>
+  </div>
+  <div class="card border-success mb-3" style="max-width: 18rem;">
+    <div class="card-header">Total Spots Available</div>
+    <div class="card-body text-success">
+      <strong><font size="70">
+        <strong><font size="70">
+          <div id="spots_empty"></div>
+        </font></strong>
+      </font></strong>
+    </div>
+  </div>
+</div>
+
+<img    id="spots"
+        src="/parking_lot_stream"
+        alt="Available Parking Spots"
+>
+
+

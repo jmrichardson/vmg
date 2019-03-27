@@ -1,0 +1,149 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+  <meta content="" name="Parking Lot Spot Locator">
+  <meta content="" name="John Richardson">
+
+  <title>VMG - Parking Spot Locator</title>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+
+  <!-- Custom fonts for this template -->
+  <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/simple-line-icons/css/simple-line-icons.css' %}" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+
+  <!-- Custom styles for this template -->
+  <link href="{% static 'css/landing-page.css' %}" rel="stylesheet">
+  <style type="text/css">
+    .asteriskField {
+      display: none;
+    }
+    form .alert ul li {
+      list-style: none;
+    }
+    form .alert ul {
+      padding: 0;
+      margin: 0;
+    }
+    #info {
+      width:80%;
+      height: auto;
+      max-width: 1000px;
+      margin-top: 50px;
+      margin-bottom: 30px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+      padding: 0px;
+    }
+    #info .card-body {
+      padding: 0px;
+    }
+    #spots {
+      display:block;
+      height: auto;
+      max-width: 1000px;
+      margin-top: 30px;
+      margin-bottom: 50px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 80%;
+    }
+  </style>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+</head>
+
+<body>
+
+<!-- Header -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light static-top">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <img src="{% static 'img/vmg-logo.png' %}" height="40" alt="Verizon Media Group">
+    </a>
+    {% block navuser %}{% endblock %}
+  </div>
+</nav>
+
+
+{% block content %}{% endblock %}
+
+
+<!-- Footer -->
+<footer class="footer bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 h-100 text-center text-lg-left my-auto">
+        <ul class="list-inline mb-2">
+          <li class="list-inline-item">
+            <a href="#">About</a>
+          </li>
+          <li class="list-inline-item">&sdot;</li>
+          <li class="list-inline-item">
+            <a href="#">Contact</a>
+          </li>
+          <li class="list-inline-item">&sdot;</li>
+          <li class="list-inline-item">
+            <a href="#">Terms of Use</a>
+          </li>
+          <li class="list-inline-item">&sdot;</li>
+          <li class="list-inline-item">
+            <a href="#">Privacy Policy</a>
+          </li>
+        </ul>
+        <p class="text-muted small mb-4 mb-lg-0">&copy; Your Website 2018. All Rights Reserved.</p>
+      </div>
+      <div class="col-lg-6 h-100 text-center text-lg-right my-auto">
+        <ul class="list-inline mb-0">
+          <li class="list-inline-item mr-3">
+            <a href="#">
+              <i class="fab fa-facebook fa-2x fa-fw"></i>
+            </a>
+          </li>
+          <li class="list-inline-item mr-3">
+            <a href="#">
+              <i class="fab fa-twitter-square fa-2x fa-fw"></i>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="#">
+              <i class="fab fa-instagram fa-2x fa-fw"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap core JavaScript -->
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script>
+  var spots_empty = new EventSource("/spots_empty_stream");
+  spots_empty.onmessage = function(event) {
+    document.getElementById("spots_empty").innerHTML = event.data;
+  };
+  var spots_total = new EventSource("/spots_total_stream");
+  spots_total.onmessage = function(event) {
+    document.getElementById("spots_total").innerHTML = event.data;
+  };
+  var spots_occupied = new EventSource("/spots_occupied_stream");
+  spots_occupied.onmessage = function(event) {
+    document.getElementById("spots_occupied").innerHTML = event.data;
+  };
+</script>
+
+</body>
+
+</html>
+
