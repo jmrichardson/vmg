@@ -1,6 +1,6 @@
 # Parking Spot Locator
 
-![Parking Lot](https://raw.githubusercontent.com/jmrichardson/vmg/master/src/static/img/spots.jpg){:height="50%"}
+![Parking Lot](https://raw.githubusercontent.com/jmrichardson/vmg/master/src/static/img/spots.jpg)
 
 Python application to detect empty parking lot spots with deep learning
 from video stream.
